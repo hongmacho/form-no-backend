@@ -2,7 +2,7 @@ import { getDb } from '@/src/db/client'
 import { responses, forms } from '@/src/db/schema'
 import { createSuccessResponse, createErrorResponse, getErrorMessage } from '@/src/lib/utils'
 import { NextRequest, NextResponse } from 'next/server'
-import { eq, desc, like, and } from 'drizzle-orm'
+import { eq, desc } from 'drizzle-orm'
 
 export async function GET(
   request: NextRequest,
@@ -26,16 +26,7 @@ export async function GET(
     const filterField = searchParams.get('filterField') || ''
     const filterValue = searchParams.get('filterValue') || ''
 
-    let query = db.select().from(responses).where(eq(responses.formId, id))
-
-    // Apply search (on all fields)
-    if (search) {
-      const searchLike = `%${search}%`
-      // This is a simplified search - in production, you might want to do more sophisticated search
-      // For now, we'll just get all responses and filter in JS
-    }
-
-    const allResponses = await query.orderBy(desc(responses.createdAt))
+    const allResponses = await db.select().from(responses).where(eq(responses.formId, id)).orderBy(desc(responses.createdAt))
 
     // Apply filters in JS (since SQLite JSON filtering is complex)
     let filtered = allResponses

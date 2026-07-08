@@ -61,7 +61,7 @@ export function FormList({ forms, onDelete, isLoading }: FormListProps) {
             </p>
           )}
           <div className="text-xs text-slate-500 dark:text-slate-500 mb-4">
-            생성일: {formatDateShort(new Date(form.createdAt as any))}
+            생성일: {form.createdAt ? formatDateShort(new Date(form.createdAt instanceof Date ? form.createdAt : new Date())) : '-'}
           </div>
           <div className="flex gap-2">
             <Link

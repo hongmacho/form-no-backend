@@ -16,10 +16,6 @@ export default function PublicFormPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
 
-  useEffect(() => {
-    loadForm()
-  }, [publicId])
-
   const loadForm = async () => {
     try {
       setIsLoading(true)
@@ -43,6 +39,10 @@ export default function PublicFormPage() {
       setIsLoading(false)
     }
   }
+
+  useEffect(() => {
+    loadForm()
+  }, [publicId])
 
   const handleInputChange = (fieldId: string, value: string | string[] | number) => {
     setResponses({

@@ -9,6 +9,9 @@ export default function Home() {
   const [forms, setForms] = useState<Form[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [showCreateForm, setShowCreateForm] = useState(false)
+  const [newFormName, setNewFormName] = useState('')
+  const [isCreating, setIsCreating] = useState(false)
 
   useEffect(() => {
     loadForms()
@@ -26,32 +29,37 @@ export default function Home() {
       } else {
         setError(result.error || '폼 목록을 불러올 수 없습니다')
       }
-    } catch (err) {
+    } catch {
       setError('오류가 발생했습니다')
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleCreateForm = async () => {
-    const name = prompt('폼 이름을 입력해주세요')
-    if (!name) return
+  const handleCreateForm = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newFormName.trim()) return
 
     try {
+      setIsCreating(true)
       const response = await fetch('/api/forms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({ name: newFormName }),
       })
 
       const result = await response.json()
       if (result.success) {
+        setNewFormName('')
+        setShowCreateForm(false)
         await loadForms()
       } else {
-        alert(result.error || '폼 생성에 실패했습니다')
+        setError(result.error || '폼 생성에 실패했습니다')
       }
-    } catch (err) {
-      alert('오류가 발생했습니다')
+    } catch {
+      setError('오류가 발생했습니다')
+    } finally {
+      setIsCreating(false)
     }
   }
 
@@ -63,10 +71,10 @@ export default function Home() {
       if (result.success) {
         await loadForms()
       } else {
-        alert(result.error || '삭제에 실패했습니다')
+        setError(result.error || '삭제에 실패했습니다')
       }
-    } catch (err) {
-      alert('오류가 발생했습니다')
+    } catch {
+      setError('오류가 발생했습니다')
     }
   }
 
@@ -83,12 +91,20 @@ export default function Home() {
               드래그&드롭으로 쉽게 폼을 만들고 응답을 수집하세요
             </p>
           </div>
-          <button
-            onClick={handleCreateForm}
-            className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
-          >
-            + 새 폼 만들기
-          </button>
+          <div className="flex gap-2">
+            <Link
+              href="/dashboard"
+              className="px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-900 dark:text-slate-50 rounded-lg font-medium transition-colors"
+            >
+              대시보드
+            </Link>
+            <button
+              onClick={() => setShowCreateForm(true)}
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
+            >
+              + 새 폼 만들기
+            </button>
+          </div>
         </div>
       </header>
 
@@ -105,6 +121,51 @@ export default function Home() {
           onDelete={handleDelete}
           isLoading={isLoading}
         />
+
+        {/* Create Form Modal */}
+        {showCreateForm && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-sm w-full mx-4">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-slate-50 mb-4">
+                새 폼 만들기
+              </h2>
+              <form onSubmit={handleCreateForm} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-900 dark:text-slate-50 mb-2">
+                    폼 이름
+                  </label>
+                  <input
+                    type="text"
+                    value={newFormName}
+                    onChange={(e) => setNewFormName(e.target.value)}
+                    placeholder="예: 고객 피드백"
+                    autoFocus
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-50"
+                  />
+                </div>
+                <div className="flex gap-2 justify-end">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowCreateForm(false)
+                      setNewFormName('')
+                    }}
+                    className="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-slate-50 rounded-lg font-medium hover:bg-slate-300 dark:hover:bg-slate-600"
+                  >
+                    취소
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isCreating || !newFormName.trim()}
+                    className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium disabled:bg-slate-300"
+                  >
+                    {isCreating ? '생성 중...' : '생성'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </main>
 
       {/* Footer */}

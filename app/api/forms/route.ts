@@ -3,9 +3,9 @@ import { forms } from '@/src/db/schema'
 import { createFormSchema } from '@/src/lib/validators'
 import { generateId, generatePublicId, createSuccessResponse, createErrorResponse, getErrorMessage } from '@/src/lib/utils'
 import { NextRequest, NextResponse } from 'next/server'
-import { eq, desc } from 'drizzle-orm'
+import { desc } from 'drizzle-orm'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const db = getDb()
     const allForms = await db.select().from(forms).orderBy(desc(forms.createdAt))
