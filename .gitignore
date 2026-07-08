@@ -49,3 +49,13 @@ next-env.d.ts
 
 # omc
 .omc/
+
+# database
+*.db
+*.sqlite
+*.db-journal
+*.db-shm
+*.db-wal
+
+# omc state
+.omc/
