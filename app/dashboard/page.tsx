@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Form, Response } from '@/src/db/schema'
+import { Form, Response, FormField } from '@/src/db/schema'
 import { EmptyState } from '@/app/components/EmptyState'
 
 export default function GlobalDashboardPage() {
@@ -165,6 +165,7 @@ export default function GlobalDashboardPage() {
                 </h2>
                 <div className="space-y-2">
                   {responses
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .sort((a, b) => new Date(b.createdAt as any).getTime() - new Date(a.createdAt as any).getTime())
                     .slice(0, 10)
                     .map((response) => {
@@ -179,7 +180,7 @@ export default function GlobalDashboardPage() {
                               {form?.name || '알 수 없는 폼'}
                             </div>
                             <div className="text-xs text-slate-600 dark:text-slate-400">
-                              {new Date(response.createdAt as any).toLocaleString('ko-KR')}
+                              {response.createdAt ? new Date(response.createdAt instanceof Date ? response.createdAt : new Date()).toLocaleString('ko-KR') : '-'}
                             </div>
                           </div>
                           <Link

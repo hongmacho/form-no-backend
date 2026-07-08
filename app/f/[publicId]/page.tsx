@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
-import { Form } from '@/src/db/schema'
+import { Form, FormField } from '@/src/db/schema'
 import { EmptyState } from '@/app/components/EmptyState'
 
 export default function PublicFormPage() {
@@ -61,7 +61,7 @@ export default function PublicFormPage() {
       setError(null)
 
       // Validate required fields
-      const fields = form.fields as any[]
+      const fields = (form.fields || []) as FormField[]
       for (const field of fields) {
         if (field.required && !responses[field.id]) {
           setError(`"${field.label}" 필드는 필수입니다`)
@@ -142,8 +142,8 @@ export default function PublicFormPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {(form.fields as any[]).map((field) => (
-            <FormField
+          {((form.fields as unknown) as FormField[]).map((field) => (
+            <FormFieldComponent
               key={field.id}
               field={field}
               value={responses[field.id] || (field.type === 'checkbox' ? [] : '')}
@@ -165,12 +165,15 @@ export default function PublicFormPage() {
 }
 
 interface FormFieldProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   field: any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChange: (value: any) => void
 }
 
-function FormField({ field, value, onChange }: FormFieldProps) {
+function FormFieldComponent({ field, value, onChange }: FormFieldProps) {
   const baseClasses = 'w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-50'
 
   const label = (

@@ -15,9 +15,7 @@ const eslintConfig = defineConfig([
   ]),
   {
     rules: {
-      // Relax react-compiler rules for MVP
-      "@typescript-eslint/no-explicit-any": "off",
-      "react-hooks/exhaustive-deps": "off",
+      // Relax react-compiler rules for MVP only (these are new strict React Compiler rules)
       "react-hooks/immutability": "off",
       "react-hooks/set-state-in-effect": "off",
       "react-compiler/react-compiler": "off",

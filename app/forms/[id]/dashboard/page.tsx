@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import { Form, Response } from '@/src/db/schema'
+import { Form, Response, FormField } from '@/src/db/schema'
 import { EmptyState } from '@/app/components/EmptyState'
 
 export default function DashboardPage() {
@@ -66,7 +66,7 @@ export default function DashboardPage() {
     )
   }
 
-  const fields = form.fields as any[]
+  const fields = (form.fields || []) as FormField[]
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
@@ -139,6 +139,7 @@ export default function DashboardPage() {
 }
 
 interface FieldAnalysisProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   field: any
   responses: Response[]
 }

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { Form, Response } from '@/src/db/schema'
+import { Form, Response, FormField } from '@/src/db/schema'
 import { EmptyState } from '@/app/components/EmptyState'
 import { formatDate } from '@/src/lib/utils'
 
@@ -83,7 +83,7 @@ export default function ResponsesPage() {
   const exportCSV = () => {
     if (!form || responses.length === 0) return
 
-    const fields = form.fields as any[]
+    const fields = (form.fields || []) as FormField[]
     const headers = fields.map((f) => f.label)
     const data = responses.map((r) => {
       const rowData = r.data as Record<string, unknown>
@@ -128,7 +128,7 @@ export default function ResponsesPage() {
     )
   }
 
-  const fields = form.fields as any[]
+  const fields = (form.fields || []) as FormField[]
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
@@ -236,7 +236,7 @@ export default function ResponsesPage() {
               <tbody>
                 {filteredResponses.map((response) => (
                   <tr key={response.id} className="border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
-                    {fields.map((field) => {
+                    {(fields as FormField[]).map((field) => {
                       const data = response.data as Record<string, unknown>
                       const value = data[field.id]
                       const display = Array.isArray(value) ? value.join(', ') : String(value || '-')
@@ -248,7 +248,7 @@ export default function ResponsesPage() {
                       )
                     })}
                     <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
-                      {formatDate(new Date(response.createdAt as any))}
+                      {formatDate(new Date(response.createdAt instanceof Date ? response.createdAt : new Date()))}
                     </td>
                   </tr>
                 ))}

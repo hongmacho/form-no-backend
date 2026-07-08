@@ -6,7 +6,12 @@ import Link from 'next/link'
 import { Form, FormField } from '@/src/db/schema'
 import { generateId } from '@/src/lib/utils'
 
-const FIELD_TYPES = [
+interface FieldType {
+  value: string
+  label: string
+}
+
+const FIELD_TYPES: FieldType[] = [
   { value: 'text', label: '단답' },
   { value: 'textarea', label: '장문' },
   { value: 'radio', label: '객관식' },
@@ -52,6 +57,7 @@ export default function FormEditPage() {
   const handleAddField = (type: string) => {
     const newField: FormField = {
       id: generateId(),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
       type: type as any,
       label: '새 필드',
       placeholder: '',
@@ -251,7 +257,7 @@ interface FieldEditorProps {
   onRemove: () => void
   onMoveUp: () => void
   onMoveDown: () => void
-  fieldTypes: { value: string; label: string }[]
+  fieldTypes: FieldType[]
 }
 
 function FieldEditor({
@@ -282,6 +288,8 @@ function FieldEditor({
         </label>
         <select
           value={field.type}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onChange={(e) => onUpdate({ type: e.target.value as any })}
           className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-50"
         >
