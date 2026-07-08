@@ -29,7 +29,8 @@ export default function Home() {
       } else {
         setError(result.error || '폼 목록을 불러올 수 없습니다')
       }
-    } catch {
+    } catch (error) {
+      console.error('폼 목록 로드 실패:', error)
       setError('오류가 발생했습니다')
     } finally {
       setIsLoading(false)
@@ -56,7 +57,8 @@ export default function Home() {
       } else {
         setError(result.error || '폼 생성에 실패했습니다')
       }
-    } catch {
+    } catch (error) {
+      console.error('폼 생성 실패:', error)
       setError('오류가 발생했습니다')
     } finally {
       setIsCreating(false)
@@ -73,7 +75,8 @@ export default function Home() {
       } else {
         setError(result.error || '삭제에 실패했습니다')
       }
-    } catch {
+    } catch (error) {
+      console.error('폼 삭제 실패:', error)
       setError('오류가 발생했습니다')
     }
   }

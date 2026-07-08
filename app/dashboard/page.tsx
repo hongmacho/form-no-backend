@@ -35,7 +35,8 @@ export default function GlobalDashboardPage() {
       } else {
         setError(formsData.error || '데이터를 불러올 수 없습니다')
       }
-    } catch {
+    } catch (error) {
+      console.error('데이터 로드 실패:', error)
       setError('오류가 발생했습니다')
     } finally {
       setIsLoading(false)
