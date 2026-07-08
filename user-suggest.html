@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>폼 빌더 (백엔드 불필요) — 다음 단계 가이드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        [data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #d0d0d0;
+            --border-color: #404040;
+        }
+        
+        [data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --border-color: #e0e0e0;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .card {
+            background-color: var(--bg-secondary);
+            border-color: var(--border-color);
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+            accent-color: #3b82f6;
+        }
+
+        .checkbox-item input[type="checkbox"]:checked + .checkbox-label {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .checkbox-label {
+            margin-left: 12px;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-right: 8px;
+            margin-top: 4px;
+        }
+
+        .priority-high {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .priority-medium {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .priority-low {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        [data-theme="dark"] .priority-high {
+            background-color: #7c2d2d;
+            color: #fecaca;
+        }
+
+        [data-theme="dark"] .priority-medium {
+            background-color: #78350f;
+            color: #fcd34d;
+        }
+
+        [data-theme="dark"] .priority-low {
+            background-color: #15803d;
+            color: #86efac;
+        }
+
+        .effort-small { background-color: #dbeafe; color: #0c4a6e; }
+        .effort-medium { background-color: #fce7f3; color: #831843; }
+        .effort-large { background-color: #fecaca; color: #7c2d2d; }
+
+        [data-theme="dark"] .effort-small { background-color: #0c4a6e; color: #bfdbfe; }
+        [data-theme="dark"] .effort-medium { background-color: #831843; color: #fbcfe8; }
+        [data-theme="dark"] .effort-large { background-color: #7c2d2d; color: #fca5a5; }
+
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) {
+                --bg-primary: #1a1a1a;
+                --bg-secondary: #2d2d2d;
+                --text-primary: #ffffff;
+                --text-secondary: #d0d0d0;
+                --border-color: #404040;
+            }
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-slate-950 transition-colors duration-300">
+    <!-- Dark Mode Toggle -->
+    <div class="fixed top-4 right-4 z-50">
+        <button 
+            id="themeToggle" 
+            class="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            aria-label="Toggle dark mode"
+        >
+            <span id="themeIcon">🌙</span>
+            <span id="themeLabel" class="text-sm font-medium">다크 모드</span>
+        </button>
+    </div>
+
+    <div class="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-12">
+                <h1 class="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
+                    폼 빌더 (백엔드 불필요)
+                </h1>
+                <h2 class="text-2xl text-gray-600 dark:text-gray-300 mb-6">
+                    다음 단계 가이드
+                </h2>
+                <p class="text-lg text-gray-700 dark:text-gray-400 mb-8">
+                    MVP 완료 후 사용자 경험 개선 및 성장 전략을 안내합니다
+                </p>
+                <a 
+                    href="https://github.com/hongmacho/form-no-backend" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-2 px-6 py-3 bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-800 rounded-lg font-medium hover:bg-gray-700 dark:hover:bg-gray-300 transition-colors"
+                >
+                    <span>📦 GitHub 저장소</span>
+                    <span>→</span>
+                </a>
+            </div>
+
+            <!-- Quick Wins Section -->
+            <section class="mb-12">
+                <h3 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                    <span>⚡</span> 빠른 승리 (Quick Wins)
+                </h3>
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div class="card border rounded-lg p-6 hover:shadow-lg">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="qw1" class="rounded">
+                            <label for="qw1" class="checkbox-label font-semibold">
+                                폼 템플릿 라이브러리
+                            </label>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 ml-8 text-sm">
+                            사전 정의 템플릿으로 신규 사용자 온보딩 50% 단축
+                        </p>
+                    </div>
+                    
+                    <div class="card border rounded-lg p-6 hover:shadow-lg">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="qw2" class="rounded">
+                            <label for="qw2" class="checkbox-label font-semibold">
+                                응답 개별 삭제
+                            </label>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 ml-8 text-sm">
+                            사용자 실수 대응 및 테스트 응답 정리
+                        </p>
+                    </div>
+
+                    <div class="card border rounded-lg p-6 hover:shadow-lg">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="qw3" class="rounded">
+                            <label for="qw3" class="checkbox-label font-semibold">
+                                폼 복제 기능
+                            </label>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 ml-8 text-sm">
+                            유사 폼 생성 시간 90% 단축
+                        </p>
+                    </div>
+
+                    <div class="card border rounded-lg p-6 hover:shadow-lg">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="qw4" class="rounded">
+                            <label for="qw4" class="checkbox-label font-semibold">
+                                다크 모드 기본 지원
+                            </label>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 ml-8 text-sm">
+                            야간 사용자 경험 개선 및 배터리 절약
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Feature Enhancements -->
+            <section class="mb-12">
+                <h3 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                    <span>🚀</span> 기능 개선 (Feature Enhancements)
+                </h3>
+                <div class="grid gap-6">
+                    <div class="card border rounded-lg p-6">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="fe1" class="rounded">
+                            <label for="fe1" class="checkbox-label">
+                                <div class="font-semibold">조건부 필드 (Conditional Fields)</div>
+                                <div class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                                    특정 필드 응답에 따라 다음 필드 표시/숨김 (예: '예' 선택 시만 상세 필드 표시)
+                                </div>
+                                <div class="mt-3 flex gap-2 flex-wrap">
+                                    <span class="tag priority-high">우선순위: 높음</span>
+                                    <span class="tag effort-large">노력: 큼</span>
+                                    <span class="text-xs text-gray-600 dark:text-gray-400">약 2주 소요</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="card border rounded-lg p-6">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="fe2" class="rounded">
+                            <label for="fe2" class="checkbox-label">
+                                <div class="font-semibold">다중 페이지 폼 (Multi-page Forms)</div>
+                                <div class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                                    긴 폼을 여러 페이지로 분산 및 진행률 바 표시
+                                </div>
+                                <div class="mt-3 flex gap-2 flex-wrap">
+                                    <span class="tag priority-high">우선순위: 높음</span>
+                                    <span class="tag effort-large">노력: 큼</span>
+                                    <span class="text-xs text-gray-600 dark:text-gray-400">약 2-3주 소요</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="card border rounded-lg p-6">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="fe3" class="rounded">
+                            <label for="fe3" class="checkbox-label">
+                                <div class="font-semibold">고급 필터링 (Advanced Filters)</div>
+                                <div class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                                    복합 필터 (AND/OR), 날짜 범위, 정규식 검색
+                                </div>
+                                <div class="mt-3 flex gap-2 flex-wrap">
+                                    <span class="tag priority-medium">우선순위: 중간</span>
+                                    <span class="tag effort-medium">노력: 중간</span>
+                                    <span class="text-xs text-gray-600 dark:text-gray-400">약 1주 소요</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tech Improvements -->
+            <section class="mb-12">
+                <h3 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                    <span>⚙️</span> 기술 개선 (Tech Improvements)
+                </h3>
+                <div class="grid gap-4">
+                    <div class="card border rounded-lg p-6">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="tech1" class="rounded">
+                            <label for="tech1" class="checkbox-label">
+                                <div class="font-semibold">가상 스크롤 (Virtual Scrolling)</div>
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                                    1000+ 응답 시 성능 저하 방지 (초기 렌더링 3-5초 → 100ms)
+                                </p>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="card border rounded-lg p-6">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="tech2" class="rounded">
+                            <label for="tech2" class="checkbox-label">
+                                <div class="font-semibold">서버 사이드 렌더링 (SSR)</div>
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                                    대시보드 통계 계산을 서버에서 수행 (응답 시간 50% 단축)
+                                </p>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="card border rounded-lg p-6">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="tech3" class="rounded">
+                            <label for="tech3" class="checkbox-label">
+                                <div class="font-semibold">데이터베이스 인덱싱</div>
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                                    검색/필터 쿼리 최적화 (100k+ 응답 시 0.5초 → 100ms)
+                                </p>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Growth Strategies -->
+            <section class="mb-12">
+                <h3 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                    <span>📈</span> 성장 전략 (Growth Strategies)
+                </h3>
+                <div class="grid gap-6 md:grid-cols-2">
+                    <div class="card border rounded-lg p-6">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="growth1" class="rounded">
+                            <label for="growth1" class="checkbox-label">
+                                <div class="font-semibold text-sm">공식 마켓플레이스</div>
+                                <p class="text-xs text-gray-600 dark:text-gray-400 mt-2">
+                                    커뮤니티 템플릿 공유 & 유료화 → 신규 사용자 40% 증가
+                                </p>
+                                <div class="text-xs text-gray-500 dark:text-gray-500 mt-2">📅 3-4개월</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="card border rounded-lg p-6">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="growth2" class="rounded">
+                            <label for="growth2" class="checkbox-label">
+                                <div class="font-semibold text-sm">공개 API & 개발자 커뮤니티</div>
+                                <p class="text-xs text-gray-600 dark:text-gray-400 mt-2">
+                                    Zapier/Make 통합 → 프로그래매틱 사용례 5배 증가
+                                </p>
+                                <div class="text-xs text-gray-500 dark:text-gray-500 mt-2">📅 2-3개월</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="card border rounded-lg p-6">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="growth3" class="rounded">
+                            <label for="growth3" class="checkbox-label">
+                                <div class="font-semibold text-sm">모바일 앱 (iOS/Android)</div>
+                                <p class="text-xs text-gray-600 dark:text-gray-400 mt-2">
+                                    React Native로 응답 수집/대시보드 앱 → 모바일 응답 50%
+                                </p>
+                                <div class="text-xs text-gray-500 dark:text-gray-500 mt-2">📅 4-6개월</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="card border rounded-lg p-6">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="growth4" class="rounded">
+                            <label for="growth4" class="checkbox-label">
+                                <div class="font-semibold text-sm">커뮤니티 & 문서</div>
+                                <p class="text-xs text-gray-600 dark:text-gray-400 mt-2">
+                                    Discord 커뮤니티, 튜토리얼 블로그 → 신규 획득 비용 40% 감소
+                                </p>
+                                <div class="text-xs text-gray-500 dark:text-gray-500 mt-2">📅 1개월</div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Monetization -->
+            <section class="mb-12">
+                <h3 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                    <span>💰</span> 수익화 방안 (Monetization Ideas)
+                </h3>
+                <div class="grid gap-4">
+                    <div class="card border rounded-lg p-6">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="mon1" class="rounded">
+                            <label for="mon1" class="checkbox-label">
+                                <div class="font-semibold">프리미엄 플랜</div>
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                                    월 $5/폼 (클라우드 백업, 팀 협업, API) → 월 $500-5,000
+                                </p>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="card border rounded-lg p-6">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="mon2" class="rounded">
+                            <label for="mon2" class="checkbox-label">
+                                <div class="font-semibold">엔터프라이즈 플랜</div>
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                                    연 $500+ (SSO, 커스텀 도메인, 우선 지원) → 월 $1,000-10,000
+                                </p>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="card border rounded-lg p-6">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="mon3" class="rounded">
+                            <label for="mon3" class="checkbox-label">
+                                <div class="font-semibold">API 유료 액세스</div>
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                                    월 기본 무료 (100 요청), 초과 시 $0.01/요청 → 월 $100-1,000
+                                </p>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 30-Day Focus -->
+            <section class="mb-12 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 rounded-lg p-8">
+                <h3 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                    <span>📋</span> 향후 30일 초점 (Next 30 Days Focus)
+                </h3>
+                <div class="space-y-4">
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">1️⃣</span>
+                        <div>
+                            <p class="font-semibold">Quick Wins 5개 완료</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                템플릿, 응답 삭제, 복제, 다크모드 → 사용자 만족도 20% 향상
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">2️⃣</span>
+                        <div>
+                            <p class="font-semibold">커뮤니티 & 문서 구축</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                Discord 커뮤니티, 튜토리얼 블로그 5개 → 신규 사용자 유입 증가
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">3️⃣</span>
+                        <div>
+                            <p class="font-semibold">성능 최적화</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                대시보드 SSR, 검색 인덱싱 → 응답 속도 2배 향상
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">4️⃣</span>
+                        <div>
+                            <p class="font-semibold">프리미엄 플랜 설계</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                스펙 정의, 가격 책정 → 수익화 기반 마련
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <div class="text-center pt-8 border-t border-gray-200 dark:border-gray-700">
+                <p class="text-gray-600 dark:text-gray-400 text-sm">
+                    이 가이드는 <strong>MVP 완료</strong> 이후의 성장 로드맵입니다
+                </p>
+                <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">
+                    각 항목을 체크하며 진행 상황을 추적할 수 있습니다
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dark Mode Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const themeLabel = document.getElementById('themeLabel');
+        const html = document.documentElement;
+
+        // Check for saved theme preference or default to light mode
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        if (currentTheme === 'dark') {
+            html.setAttribute('data-theme', 'dark');
+            html.classList.add('dark');
+            themeIcon.textContent = '☀️';
+            themeLabel.textContent = '라이트 모드';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            const newTheme = isDark ? 'light' : 'dark';
+            
+            html.setAttribute('data-theme', newTheme);
+            if (newTheme === 'dark') {
+                html.classList.add('dark');
+                themeIcon.textContent = '☀️';
+                themeLabel.textContent = '라이트 모드';
+            } else {
+                html.classList.remove('dark');
+                themeIcon.textContent = '🌙';
+                themeLabel.textContent = '다크 모드';
+            }
+            
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // Checkbox interaction feedback
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', (e) => {
+                const label = e.target.closest('.checkbox-item').querySelector('.checkbox-label');
+                if (e.target.checked) {
+                    label.style.opacity = '0.6';
+                } else {
+                    label.style.opacity = '1';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
