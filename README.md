@@ -1,36 +1,137 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 폼 빌더 (Form Builder)
 
-## Getting Started
+## 소개
 
-First, run the development server:
+**폼 빌더**는 Typeform·JotForm 같은 SaaS 없이 드래그&드롭으로 폼을 만들고 응답을 로컬 SQLite에 저장하는 **무료, 로컬-우선 폼 빌더**입니다.
 
+### 핵심 가치
+- ✅ **로컬 완결**: 클라우드 전송 없음, 데이터는 자기 컴퓨터에 저장
+- ✅ **무료 기본**: 월 구독료 없음
+- ✅ **간단함**: UI 극대화 (Typeform 대비 40% 더 간단)
+- ✅ **정산 투명**: 응답 수 제한 없음
+
+### 주요 기능
+- 드래그&드롭 폼 빌더 (6가지 필드 유형)
+- 폼 공개 링크 생성 (응답자용)
+- 응답 목록 (검색/필터)
+- 응답 대시보드 (통계/차트)
+- CSV 내보내기
+- 폼 설정 (이름, 설명, 공개/비공개)
+
+## 기술 스택
+
+| 계층 | 기술 |
+|------|------|
+| **프론트엔드** | Next.js 16 (App Router) + TypeScript |
+| **UI** | Tailwind CSS (shadcn/ui 패턴) |
+| **폼 입력** | 네이티브 HTML + React Hooks |
+| **차트** | 자체 구현 (막대/분포 차트) |
+| **데이터베이스** | SQLite (better-sqlite3) |
+| **ORM** | Drizzle ORM |
+| **검증** | Zod |
+
+## 설치 및 실행
+
+### 사전 요구사항
+- Node.js 18+ 
+- npm 또는 yarn
+
+### 설치
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 개발 서버 실행
+```bash
+npm run dev
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+개발 서버는 [http://localhost:3000](http://localhost:3000)에서 실행됩니다.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 빌드
+```bash
+npm run build
+```
 
-## Learn More
+### 본 실행
+```bash
+npm run start
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 사용 방법
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 1. 폼 만들기
+홈 화면에서 **"새 폼 만들기"** 버튼을 클릭합니다.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 2. 필드 추가
+폼 편집 페이지에서 드래그&드롭으로 필드를 추가합니다.
+- 단답
+- 장문
+- 객관식
+- 체크박스
+- 드롭다운
+- 평점
 
-## Deploy on Vercel
+### 3. 폼 공유
+폼 설정 페이지에서 **공개 링크를 복사**해 응답자에게 공유합니다.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 4. 응답 수집
+응답자가 링크로 접근해 답변을 제출합니다.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 5. 응답 분석
+**응답 목록**: 응답을 테이블로 조회, 검색/필터  
+**대시보드**: 응답 통계 및 분포 차트
+
+### 6. CSV 내보내기
+응답 목록에서 **"CSV 내보내기"** 버튼으로 다운로드합니다.
+
+## 화면 목록
+
+| 화면 | 경로 | 설명 |
+|------|------|------|
+| **홈** | `/` | 폼 목록 + 새 폼 만들기 |
+| **폼 편집** | `/forms/[id]/edit` | 드래그&드롭 폼 빌더 |
+| **폼 응답** | `/f/[publicId]` | 응답자용 폼 페이지 |
+| **응답 목록** | `/forms/[id]/responses` | 응답 테이블 + 검색/필터 |
+| **대시보드** | `/forms/[id]/dashboard` | 응답 통계 및 차트 |
+| **폼 설정** | `/forms/[id]/settings` | 폼 정보 및 공개 링크 |
+
+## 데이터 저장
+
+모든 데이터는 프로젝트 루트의 **form-builder.db** 파일에 SQLite로 저장됩니다.
+
+### 파일 위치
+```
+form-no-backend/
+└── form-builder.db  # 자동 생성
+```
+
+### 백업
+정기적으로 `form-builder.db` 파일을 백업하세요.
+
+## 제약사항 (MVP)
+
+❌ 클라우드 백업  
+❌ 팀 협업  
+❌ 응답 알림 (이메일/Slack)  
+❌ 조건부 필드 (예: "예"를 선택하면 다음 질문 표시)  
+❌ 결제 통합  
+❌ API 공개  
+
+## 향후 로드맵
+
+- v1.1: 폼 삭제, 응답 삭제, 응답 편집
+- v2.0: 클라우드 백업 (선택), 팀 협업, 응답 알림
+
+## 라이선스
+
+MIT License
+
+## 문의
+
+문제가 발생하거나 기능을 제안하고 싶으면 이슈를 등록해주세요.
+
+---
+
+**Made with ❤️ by Claude Code**  
+Next.js 16 + Drizzle + SQLite
