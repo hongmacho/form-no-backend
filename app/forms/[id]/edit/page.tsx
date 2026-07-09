@@ -160,6 +160,24 @@ export default function FormEditPage() {
             </div>
           </div>
           <div className="flex gap-2">
+            <Link
+              href={`/forms/${formId}/responses`}
+              className="px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-900 dark:text-slate-50 rounded-lg font-medium"
+            >
+              응답
+            </Link>
+            <Link
+              href={`/forms/${formId}/dashboard`}
+              className="px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-900 dark:text-slate-50 rounded-lg font-medium"
+            >
+              통계
+            </Link>
+            <Link
+              href={`/forms/${formId}/settings`}
+              className="px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-900 dark:text-slate-50 rounded-lg font-medium"
+            >
+              설정
+            </Link>
             <button
               onClick={handleSave}
               disabled={isSaving}
